@@ -2,7 +2,7 @@
 # https://github.com/silven/go-example/blob/master/Makefile
 # https://vic.demuzere.be/articles/golang-makefile-crosscompile/
 
-BINARY = superdo
+BINARY = service_exporter
 VET_REPORT = vet.report
 TEST_REPORT = tests.xml
 GOARCH = amd64
@@ -12,7 +12,7 @@ COMMIT=$(shell git rev-parse HEAD)
 BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 # Symlink into GOPATH
-GITHUB_USERNAME=turtlemonvh
+GITHUB_USERNAME=tylux
 BUILD_DIR=${GOPATH}/src/github.com/${GITHUB_USERNAME}/${BINARY}
 CURRENT_DIR=$(shell pwd)
 BUILD_DIR_LINK=$(shell readlink ${BUILD_DIR})

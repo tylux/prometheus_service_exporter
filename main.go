@@ -4,40 +4,39 @@ import (
 	"flag"
 	"fmt"
 	"os/exec"
+	"strings"
 )
 
 var (
-	service = flag.String("s", "", "The name of the systemd service you want to monitor")
+	service = flag.String("s", "", "A comma-separated list of services to monitor")
 )
 
 func serviceCheck(s string) string {
 	//Command to check if systemd service is active
-	cmdName := "systemctl is-active"
-	cmdArgs := []string{s}
+	cmdName := "/bin/systemctl"
+	cmdArgs := []string{"is-active", s}
 
-	cmdOut, err := exec.Command(cmdName, cmdArgs...).Output()
-	if err != nil {
-		fmt.Println("error occured")
-		fmt.Printf("%s", err)
-	}
+	cmdOut, _ := exec.Command(cmdName, cmdArgs...).Output()
 
-	isActive := string(cmdOut)
-
+	isActive := strings.TrimSpace(string(cmdOut))
 	if isActive == "active" {
-		fmt.Printf("%s is active", s)
+		fmt.Printf("%s is active\n", s)
 	} else {
-		fmt.Printf("%s is not active", s)
+		fmt.Printf("%s is not active\n", s)
 	}
 	return isActive
 }
 
 func main() {
 	flag.Parse()
+	//split up based on comma
+	serviceSlice := strings.Split(*service, ",")
 
 	if *service == "" {
-		fmt.Println("You need to define a service to monitor..")
+		fmt.Println("You need to define a comma-separated list of services to monitor.")
 	} else {
-		serviceCheck(*service)
+		for i := range serviceSlice {
+			serviceCheck(serviceSlice[i])
+		}
 	}
-
 }
