@@ -21,7 +21,7 @@ BUILD_DIR_LINK=$(shell readlink ${BUILD_DIR})
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH}"
 
 # Build the project
-all: link clean test vet linux darwin windows
+all: link clean test vet linux
 
 link:
 	BUILD_DIR=${BUILD_DIR}; \
@@ -35,17 +35,7 @@ link:
 
 linux:
 	cd ${BUILD_DIR}; \
-	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-linux-${GOARCH} . ; \
-	cd - >/dev/null
-
-darwin:
-	cd ${BUILD_DIR}; \
-	GOOS=darwin GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-darwin-${GOARCH} . ; \
-	cd - >/dev/null
-
-windows:
-	cd ${BUILD_DIR}; \
-	GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-windows-${GOARCH}.exe . ; \
+	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/prometheus_${BINARY} . ; \
 	cd - >/dev/null
 
 test:
@@ -69,4 +59,4 @@ clean:
 	-rm -f ${VET_REPORT}
 	-rm -f ${BINARY}-*
 
-.PHONY: link linux darwin windows test vet fmt clean
+.PHONY: link linux test vet fmt clean

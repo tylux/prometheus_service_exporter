@@ -1,0 +1,13 @@
+# /etc/systemd/system/prometheus-service-exporter.service
+[Unit]
+Description=Prometheus Service Exporter
+Documentation=https://github.com/tylux/prometheus_service_exporter
+After=network.target
+
+[Service]
+Environment=Debug=false
+Environment=ListenAddress=:8080
+Environment=MetricsPath=/metrics
+User=root
+Restart=on-failure
+ExecStart=/usr/local/bin/prometheus_service_exporter -s sshd.service

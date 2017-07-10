@@ -3,40 +3,62 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os/exec"
-	"strings"
+	"log"
+	"net/http"
+
+	"github.com/kelseyhightower/envconfig"
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+// Specification CLI Arguments for Changing exporter behavior
+type Specification struct {
+	Debug         bool   `default:"false"`
+	ListenAddress string `default:":8080"`
+	MetricsPath   string `default:"/metrics"`
+	//	Service       string `default:"sshd"`
+}
 
 var (
-	service = flag.String("s", "", "A comma-separated list of services to monitor")
+	service = flag.String("s", "", "Name of the service you wish to monitor")
 )
-
-func serviceCheck(s string) string {
-	//Command to check if systemd service is active
-	cmdName := "/bin/systemctl"
-	cmdArgs := []string{"is-active", s}
-
-	cmdOut, _ := exec.Command(cmdName, cmdArgs...).Output()
-
-	isActive := strings.TrimSpace(string(cmdOut))
-	if isActive == "active" {
-		fmt.Printf("%s is active\n", s)
-	} else {
-		fmt.Printf("%s is not active\n", s)
-	}
-	return isActive
-}
 
 func main() {
 	flag.Parse()
-	//split up based on comma
-	serviceSlice := strings.Split(*service, ",")
+	var s Specification
+	err := envconfig.Process("", &s)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	log.Println("Starting Exporter...")
 
 	if *service == "" {
-		fmt.Println("You need to define a comma-separated list of services to monitor.")
+		fmt.Println("You need to define a service to monitor.")
 	} else {
-		for i := range serviceSlice {
-			serviceCheck(serviceSlice[i])
-		}
+		serviceString := string(*service)
+		exporter := NewExporter(serviceString)
+		prometheus.MustRegister(exporter)
+	}
+
+	log.Printf("Starting Server: %s\n", s.ListenAddress)
+	log.Printf("Metrics Path: %s\n", s.MetricsPath)
+	handler := prometheus.Handler()
+
+	if s.MetricsPath == "" || s.MetricsPath == "/" {
+		http.Handle(s.MetricsPath, handler)
+	} else {
+		http.Handle(s.MetricsPath, handler)
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(`<html>
+				<head><title>Prometheus Service Exporter</title></head>
+				<body>
+				<h1>Prometheus Service Exporter</h1>
+				<p><a href="` + s.MetricsPath + `">Metrics</a></p>
+				</body>
+				</html>`))
+		})
+	}
+	err = http.ListenAndServe(s.ListenAddress, nil)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
