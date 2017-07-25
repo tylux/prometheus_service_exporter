@@ -12,7 +12,7 @@ Useful for times when there isn't a full exporter for the service and you need t
   - Run ```systemctl daemon-reload``` and ```systemctl start prometheus-service-exporter.service```
 
 # Test and Example output
-Run ```curl localhost:8080/metrics```
+Run ```curl localhost:9199/metrics```
 ```sh
 # HELP service_up Is the service active
 # TYPE service_up gauge
