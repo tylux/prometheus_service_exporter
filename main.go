@@ -15,7 +15,7 @@ import (
 // Specification CLI Arguments for Changing exporter behavior
 type Specification struct {
 	Debug         bool   `default:"false"`
-	ListenAddress string `default:":8080"`
+	ListenAddress string `default:":9199"`
 	MetricsPath   string `default:"/metrics"`
 	//	Service       string `default:"sshd"`
 }
