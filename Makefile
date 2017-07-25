@@ -35,7 +35,7 @@ link:
 
 linux:
 	cd ${BUILD_DIR}; \
-	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/prometheus_${BINARY} . ; \
+	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/${BINARY} . ; \
 	cd - >/dev/null
 
 test:
