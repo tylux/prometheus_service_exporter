@@ -2,7 +2,7 @@
 # https://github.com/silven/go-example/blob/master/Makefile
 # https://vic.demuzere.be/articles/golang-makefile-crosscompile/
 
-BINARY = service_exporter
+BINARY = prometheus_service_exporter
 VET_REPORT = vet.report
 TEST_REPORT = tests.xml
 GOARCH = amd64
