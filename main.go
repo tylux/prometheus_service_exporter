@@ -65,9 +65,11 @@ func main() {
 	}
 
 	go func() {
-		for i := range serviceSlice {
-			x := serviceCheck(serviceSlice[i])
-			pm.With(prometheus.Labels{"service": serviceSlice[i]}).Set(x)
+		for {
+			for i := range serviceSlice {
+				x := serviceCheck(serviceSlice[i])
+				pm.With(prometheus.Labels{"service": serviceSlice[i]}).Set(x)
+			}
 		}
 	}()
 
