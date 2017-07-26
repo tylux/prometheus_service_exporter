@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Specification CLI Arguments for Changing exporter behavior
@@ -66,6 +68,7 @@ func main() {
 
 	go func() {
 		for {
+			time.Sleep(5 * time.Second)
 			for i := range serviceSlice {
 				x := serviceCheck(serviceSlice[i])
 				pm.With(prometheus.Labels{"service": serviceSlice[i]}).Set(x)
@@ -75,7 +78,7 @@ func main() {
 
 	log.Printf("Starting Server: %s\n", s.ListenAddress)
 	log.Printf("Metrics Path: %s\n", s.MetricsPath)
-	handler := prometheus.Handler()
+	handler := promhttp.Handler()
 
 	if s.MetricsPath == "" || s.MetricsPath == "/" {
 		http.Handle(s.MetricsPath, handler)
